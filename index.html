@@ -4,33 +4,185 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>You Are Enough</title>
- <link rel="stylesheet" href="./style.css">
-<script src="./script.js"></script>
+
+  <style>
+    :root {
+      --bg: #0f0f14;
+      --text: #eaeaf0;
+      --muted: #9a9aa5;
+      --glass: rgba(255,255,255,0.06);
+      --accent: #8b8bff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* subtle noise */
+    .noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    }
+
+    main {
+      min-height: 100vh;
+      padding: 80px 10vw;
+      display: grid;
+      gap: 120px;
+    }
+
+    /* HERO */
+    .hero h1 {
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
+    .hero span {
+      color: var(--accent);
+    }
+
+    .sub {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    /* GLASS */
+    .glass {
+      backdrop-filter: blur(18px);
+      background: var(--glass);
+      border-radius: 20px;
+      padding: 40px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .message {
+      max-width: 720px;
+    }
+
+    .typewriter {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: #ddd;
+      white-space: pre-wrap;
+    }
+
+    /* AFFIRMATIONS */
+    .affirmations {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 30px;
+    }
+
+    .card {
+      padding: 30px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      transition: transform 0.4s ease, background 0.4s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* FOOTER */
+    .footer {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    button {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--text);
+      padding: 10px 22px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* OVERLAY */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .overlay.show {
+      display: flex;
+    }
+
+    .overlay-content {
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .overlay-content p {
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* REVEAL ANIMATION */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+  </style>
 </head>
 <body>
 
   <div class="noise"></div>
 
-  <main class="wrapper">
-    <section class="hero">
-      <h1 class="reveal">You are<br><span>already enough.</span></h1>
-      <p class="sub reveal-delay">
+  <main>
+    <section class="hero reveal">
+      <h1>
+        You are<br>
+        <span>already enough.</span>
+      </h1>
+      <p class="sub">
         You never needed permission to be worthy.
       </p>
     </section>
 
-    <section class="message glass">
-      <p class="typewriter" data-text="You are awesome exactly the way you are. Not because you try, not because you change — but because you exist."></p>
+    <section class="message glass reveal">
+      <p class="typewriter" data-text="
+You are awesome exactly the way you are.
+Not because you try.
+Not because you change.
+But because you exist.
+      "></p>
     </section>
 
     <section class="affirmations">
       <div class="card reveal">You don’t need to prove your value.</div>
       <div class="card reveal">You were never behind.</div>
-      <div class="card reveal">You are not “too much”.</div>
-      <div class="card reveal">You are not “less”.</div>
+      <div class="card reveal">You are not too much.</div>
+      <div class="card reveal">You are not less.</div>
     </section>
 
-    <footer class="footer reveal-delay">
+    <footer class="footer reveal">
       <span>Still here?</span>
       <button id="finalBtn">Read this</button>
     </footer>
@@ -39,14 +191,51 @@
   <div class="overlay" id="overlay">
     <div class="overlay-content glass">
       <p>
-        Never feel that you are not up to the mark.  
+        Never feel that you are not up to the mark.<br>
         The mark was never meant to measure you.
       </p>
       <button onclick="closeOverlay()">Close</button>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    /* Reveal on scroll */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.transition = "0.9s ease";
+          entry.target.style.opacity = 1;
+          entry.target.style.transform = "translateY(0)";
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+    /* Typewriter */
+    const tw = document.querySelector(".typewriter");
+    const text = tw.dataset.text.trim();
+    let i = 0;
+
+    function type() {
+      if (i < text.length) {
+        tw.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, 35);
+      }
+    }
+    type();
+
+    /* Overlay */
+    const overlay = document.getElementById("overlay");
+    document.getElementById("finalBtn").onclick = () => {
+      overlay.classList.add("show");
+    };
+
+    function closeOverlay() {
+      overlay.classList.remove("show");
+    }
+  </script>
+
 </body>
 </html>
-
